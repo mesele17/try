@@ -1,0 +1,87 @@
+#%RAML 1.0
+title: New API
+types:
+  AccountData:
+    properties:
+      id:
+        example: Example
+        type: string
+      firstName:
+        example: Example
+        type: string
+      lastName:
+        example: Example
+        type: string
+      address:
+        example: Example
+        type: string
+      postal:
+        example: Example
+        type: string
+      country:
+        example: Example
+        type: string
+      miles:
+        example: 1
+        type: number
+        format: int
+      creationDate:
+        example: 2020-06-16T11:46:20.000Z
+        type: datetime
+        format: rfc3339
+      name:
+        enum:
+          - personal
+          - business
+        example: personal
+        type: string
+securitySchemes:
+  SecurityScheme:
+    type: Basic Authentication
+    settings: {}
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/54a05b1e-0f5f-42fe-b5e1-83f93a0656bc/
+mediaType:
+  - application/json
+protocols:
+  - HTTP
+  - HTTPS
+/Account:
+  get:
+    queryParameters:
+      name:
+        example: Example
+        type: string
+      country:
+        example: Example
+        type: string
+    body: {}
+    responses:
+      "200":
+        body:
+          application/json:
+            example:
+              strict: true
+              value:
+                id: "123"
+                firstName: dave
+                lastName: james
+                address: 200 lawyers rd
+                postal: "22180"
+                country: USA
+                miles: 1
+                creationDate: 2020-06-16T11:46:20.000Z
+                name: personal
+            type: object
+    securedBy: []
+  post:
+    body:
+      items:
+        example: "{\"message\" : \"created successfully\"}"
+        type: string
+    responses:
+      "200": {}
+    securedBy: []
+  uriParameters:
+    Requester-ID:
+      example: Example
+      type: string

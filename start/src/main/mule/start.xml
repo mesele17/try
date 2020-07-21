@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b3442d3b-b630-49d8-b41c-39a09d8154d8" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<validation:config name="Validation_Config" doc:name="Validation Config" doc:id="93e9fa77-d9df-4b28-b272-7c20f74af6c6" />
+	<flow name="startFlow" doc:id="e0df93ce-f9bd-416c-82aa-5203d75e90a6" >
+		<http:listener doc:name="Listener" doc:id="cfc7d7bc-433a-4d37-a1c1-cc068ec69e4d" config-ref="HTTP_Listener_config" path="/start"/>
+		<set-payload value="#[[1,2,3,4]]" doc:name="Set Payload" doc:id="11fa449b-3a3f-4c3c-b68e-b68762ea5d81" />
+		<foreach doc:name="For Each" doc:id="8950f520-b833-4057-8e10-31a66c908489" collection="#[payload]">
+			<set-payload value='#["order" ++ payload]' doc:name="Set Payload" doc:id="a1aafdd6-c42f-45f5-8b99-6c71865424b2" />
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="da457c36-d689-430e-9d13-95231c5a5a13" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

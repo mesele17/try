@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getOrders" doc:id="eb25b0b0-6c9a-4101-8a4e-9d2b91aab2c1" >
+		<db:select doc:name="Select" doc:id="c06b40b2-fd33-4dec-95a8-4b004b145fda" config-ref="Database_Config">
+			<db:sql>select * from accounts where name= :name AND country= :country AND RequesterID=:RequesterID ;</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+"name": attributes.queryParams.name,
+"country": attributes.queryParams.country,
+"RequesterID":attributes.URIparams.RequesterID
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="4709d93d-efdc-4d90-8442-4b91630724fd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="postOrders" doc:id="696c9b28-9387-4817-9481-03625798fa52" >
+		<db:insert doc:name="Insert" doc:id="1b8aa128-2d91-44cc-ae6d-e3a91f1ea273" config-ref="Database_Config">
+			<db:sql >insert into accounts (id, firstName, lastName, address, postal, country, miles, name) values
+ (:id, :firstName, :lastName, :address, :postal, :country, :miles, :name) where RequesterID= :RequesterID</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+"id": payload.id,
+"firstName": payload.firstName,
+"lastName": payload.lastName,
+"address": payload.address,
+"postal": payload.postal,
+"country": payload.country,
+"miles": payload.miles,
+"name": payload.name,
+"RequesterID":attributes.URIparams.RequesterID
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="8b489fd9-d91b-44e0-8a2a-ccaf447854c7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "created successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
